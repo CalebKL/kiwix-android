@@ -18,6 +18,7 @@
 
 package org.kiwix.kiwixmobile.core.page.notes.viewmodel
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import org.kiwix.kiwixmobile.core.dao.NotesRoomDao
 import org.kiwix.kiwixmobile.core.page.adapter.Page
@@ -70,5 +71,5 @@ class NotesViewModel @Inject constructor(
     ShowDeleteNotesDialog(effects, state, pageDao, viewModelScope)
 
   override fun onItemClick(page: Page) =
-    ShowOpenNoteDialog(effects, page, zimReaderContainer)
+    ShowOpenNoteDialog(effects, page, zimReaderContainer, viewModelScope)
 }

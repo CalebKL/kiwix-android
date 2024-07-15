@@ -23,6 +23,7 @@ import android.net.ConnectivityManager
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -164,7 +165,7 @@ class ZimManageViewModel @Inject constructor(
       when (it) {
         is RequestNavigateTo -> OpenFileWithNavigation(it.bookOnDisk)
         is RequestMultiSelection -> startMultiSelectionAndSelectBook(it.bookOnDisk)
-        RequestDeleteMultiSelection -> DeleteFiles(selectionsFromState())
+        RequestDeleteMultiSelection -> DeleteFiles(selectionsFromState(), viewModelScope)
         RequestShareMultiSelection -> ShareFiles(selectionsFromState())
         MultiModeFinished -> noSideEffectAndClearSelectionState()
         is RequestSelect -> noSideEffectSelectBook(it.bookOnDisk)
