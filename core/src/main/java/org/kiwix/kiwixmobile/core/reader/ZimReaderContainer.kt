@@ -20,6 +20,7 @@ package org.kiwix.kiwixmobile.core.reader
 import android.content.res.AssetFileDescriptor
 import android.webkit.WebResourceResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.kiwix.kiwixmobile.core.extensions.isFileExist
 import org.kiwix.kiwixmobile.core.reader.ZimFileReader.Factory
