@@ -1271,10 +1271,8 @@ abstract class CoreReaderFragment :
       it.bringToFront()
       Snackbar.make(it, R.string.tab_closed, Snackbar.LENGTH_LONG)
         .setAction(R.string.undo) { undoButton ->
-          lifecycleScope.launch {
-            undoButton.isEnabled = false
-            restoreDeletedTab(index)
-          }
+          undoButton.isEnabled = false
+          restoreDeletedTab(index)
         }.show()
     }
     openHomeScreen()
@@ -1299,7 +1297,7 @@ abstract class CoreReaderFragment :
     zimReaderContainer?.setZimFile(null)
   }
 
-  private suspend fun restoreDeletedTab(index: Int) {
+  private fun restoreDeletedTab(index: Int) {
     if (webViewList.isEmpty()) {
       reopenBook()
     }
@@ -1314,7 +1312,6 @@ abstract class CoreReaderFragment :
           LinearLayout.LayoutParams.MATCH_PARENT
         )
       }
-      zimReaderContainer?.setZimFile(tempZimFileForUndo)
       webViewList.add(index, it)
       tabsAdapter?.notifyDataSetChanged()
       snackBarRoot?.let { root ->
@@ -1718,11 +1715,9 @@ abstract class CoreReaderFragment :
       root.bringToFront()
       Snackbar.make(root, R.string.tabs_closed, Snackbar.LENGTH_LONG).apply {
         setAction(R.string.undo) {
-          lifecycleScope.launch {
-            it.isEnabled = false // to prevent multiple clicks on this button
-            setIsCloseAllTabButtonClickable(true)
-            restoreDeletedTabs()
-          }
+          it.isEnabled = false // to prevent multiple clicks on this button
+          setIsCloseAllTabButtonClickable(true)
+          restoreDeletedTabs()
         }
         show()
       }
@@ -1733,9 +1728,8 @@ abstract class CoreReaderFragment :
     closeAllTabsButton?.isClickable = isClickable
   }
 
-  private suspend fun restoreDeletedTabs() {
+  private fun restoreDeletedTabs() {
     if (tempWebViewListForUndo.isNotEmpty()) {
-      zimReaderContainer?.setZimFile(tempZimFileForUndo)
       webViewList.addAll(tempWebViewListForUndo)
       tabsAdapter?.notifyDataSetChanged()
       snackBarRoot?.let { root ->
