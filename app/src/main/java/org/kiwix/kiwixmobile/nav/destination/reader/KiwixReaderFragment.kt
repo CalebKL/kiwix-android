@@ -90,28 +90,33 @@ class KiwixReaderFragment : CoreReaderFragment() {
     }
   }
 
+  @Suppress("TooGenericExceptionCaught")
   private suspend fun openPageInBookFromNavigationArguments() {
     val args = KiwixReaderFragmentArgs.fromBundle(requireArguments())
-
-    if (args.pageUrl.isNotEmpty()) {
-      if (args.zimFileUri.isNotEmpty()) {
-        tryOpeningZimFile(args.zimFileUri)
+    try {
+      if (args.pageUrl.isNotEmpty()) {
+        if (args.zimFileUri.isNotEmpty()) {
+          tryOpeningZimFile(args.zimFileUri)
+        } else {
+          // Set up bookmarks for the current book when opening bookmarks from the Bookmark screen.
+          // This is necessary because we are not opening the ZIM file again; the bookmark is
+          // inside the currently opened book. Bookmarks are set up when opening the ZIM file.
+          // See https://github.com/kiwix/kiwix-android/issues/3541
+          zimReaderContainer?.zimFileReader?.let(::setUpBookmarks)
+        }
+        loadUrlWithCurrentWebview(args.pageUrl)
       } else {
-        // Set up bookmarks for the current book when opening bookmarks from the Bookmark screen.
-        // This is necessary because we are not opening the ZIM file again; the bookmark is
-        // inside the currently opened book. Bookmarks are set up when opening the ZIM file.
-        // See https://github.com/kiwix/kiwix-android/issues/3541
-        zimReaderContainer?.zimFileReader?.let(::setUpBookmarks)
+        if (args.zimFileUri.isNotEmpty()) {
+          tryOpeningZimFile(args.zimFileUri)
+        } else {
+          manageExternalLaunchAndRestoringViewState()
+        }
       }
-      loadUrlWithCurrentWebview(args.pageUrl)
-    } else {
-      if (args.zimFileUri.isNotEmpty()) {
-        tryOpeningZimFile(args.zimFileUri)
-      } else {
-        manageExternalLaunchAndRestoringViewState()
-      }
+    } catch (error: Exception) {
+      Log.e("KiwixReader", "Error opening ZIM file", error)
+    } finally {
+      requireArguments().clear()
     }
-    requireArguments().clear()
   }
 
   private suspend fun tryOpeningZimFile(zimFileUri: String) {
