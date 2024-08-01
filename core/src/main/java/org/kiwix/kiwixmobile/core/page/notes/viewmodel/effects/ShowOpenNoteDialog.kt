@@ -27,6 +27,7 @@ import org.kiwix.kiwixmobile.core.base.SideEffect
 import org.kiwix.kiwixmobile.core.extensions.ActivityExtensions.cachedComponent
 import org.kiwix.kiwixmobile.core.page.adapter.Page
 import org.kiwix.kiwixmobile.core.page.notes.adapter.NoteListItem
+import org.kiwix.kiwixmobile.core.page.viewmodel.Action
 import org.kiwix.kiwixmobile.core.page.viewmodel.effects.OpenNote
 import org.kiwix.kiwixmobile.core.page.viewmodel.effects.OpenPage
 import org.kiwix.kiwixmobile.core.reader.ZimFileReader.Companion.CONTENT_PREFIX
@@ -43,6 +44,7 @@ import javax.inject.Inject
 
 data class ShowOpenNoteDialog(
   private val effects: PublishProcessor<SideEffect<*>>,
+  private val actions: PublishProcessor<Action>,
   private val page: Page,
   private val zimReaderContainer: ZimReaderContainer,
   private val dialogScope: CoroutineScope
@@ -54,6 +56,7 @@ data class ShowOpenNoteDialog(
       ShowNoteDialog,
       { effects.offer(OpenPage(page, zimReaderContainer)) },
       {
+        actions.offer(Action.LoadingData(true))
         dialogScope.launch {
           val item = page as NoteListItem
           // Check if zimFilePath is not null, and then set it in zimReaderContainer.
@@ -84,6 +87,7 @@ data class ShowOpenNoteDialog(
             }
           }
           effects.offer(OpenNote(item.noteFilePath, item.zimUrl, item.title))
+          actions.offer(Action.LoadingData(false))
         }
       }
     )
